@@ -40,11 +40,11 @@ macro(declare_icu_component _NAME)
 endmacro(declare_icu_component)
 
 declare_icu_component(data icudata)
-declare_icu_component(uc   icuuc)   # Common and Data libraries
-declare_icu_component(i18n icui18n) # Internationalization library
-declare_icu_component(io   icuio)   # Stream and I/O Library
-declare_icu_component(le   icule)   # Layout library
-declare_icu_component(lx   iculx)   # Paragraph Layout library
+declare_icu_component(uc   icuuc)         # Common and Data libraries
+declare_icu_component(i18n icui18n icuin) # Internationalization library
+declare_icu_component(io   icuio)         # Stream and I/O Library
+declare_icu_component(le   icule)         # Layout library
+declare_icu_component(lx   iculx)         # Paragraph Layout library
 
 ########## Public ##########
 set(ICU_FOUND TRUE)
