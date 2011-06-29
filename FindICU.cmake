@@ -12,7 +12,10 @@
 #
 # Example Usage:
 #
-#   Call find_package() once, here are some examples to pick from
+#   1. Copy this file in the root of your project source directory
+#   2. Then, tell CMake to search this non-standard module in your project directory by adding to your CMakeLists.txt:
+#     set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
+#   3. Finally call find_package() once, here are some examples to pick from
 #
 #   Require ICU 4.4 or later
 #     find_package(ICU 4.4 REQUIRED)
