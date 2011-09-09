@@ -26,6 +26,15 @@
 #      target_link_libraries(myapp ${ICU_LIBRARIES})
 #   endif()
 
+#=============================================================================
+# Copyright (c) 2011, julp
+#
+# Distributed under the OSI-approved BSD License
+#
+# This software is distributed WITHOUT ANY WARRANTY; without even the
+# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#=============================================================================
+
 find_package(PkgConfig)
 
 ########## Private ##########
