@@ -39,7 +39,7 @@ find_package(PkgConfig)
 
 ########## Private ##########
 function(icudebug _varname)
-    if (ICU_DEBUG)
+    if(ICU_DEBUG)
         message("${_varname} = ${${_varname}}")
     endif(ICU_DEBUG)
 endfunction(icudebug)
