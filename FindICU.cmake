@@ -1,5 +1,8 @@
 # This module can find the International Components for Unicode (ICU) Library
 #
+# Requirements:
+# - CMake >= 2.8.3
+#
 # The following variables will be defined for your use:
 #   - ICU_FOUND             : were all of your specified components found (include dependencies)?
 #   - ICU_INCLUDE_DIR       : ICU include directory
