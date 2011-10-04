@@ -113,6 +113,7 @@ foreach(_icu_component ${ICU_FIND_COMPONENTS})
         _icu_lib
         NAMES ${IcuComponents_${_icu_component}}
         DOC "Libraries for ICU"
+        PATHS "${ICU_INCLUDE_DIR}/../lib"
     )
 
     string(TOUPPER "${_icu_component}" _icu_upper_component)
