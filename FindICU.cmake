@@ -13,6 +13,10 @@
 #   - ICU_PATCH_VERSION     : patch version of ICU
 #   - ICU_<COMPONENT>_FOUND : were <COMPONENT> found? (FALSE for non specified component if it is not a dependency)
 #
+# For windows or non standard installation, define ICU_ROOT variable to point to the root installation of ICU. Two ways:
+#   - run cmake with -DICU_ROOT=<PATH>
+#   - define an environment variable with the same name before running cmake
+#
 # Example Usage:
 #
 #   1. Copy this file in the root of your project source directory
@@ -30,7 +34,7 @@
 #   endif()
 
 #=============================================================================
-# Copyright (c) 2011, julp
+# Copyright (c) 2011-2012, julp
 #
 # Distributed under the OSI-approved BSD License
 #
@@ -46,6 +50,14 @@ function(icudebug _varname)
         message("${_varname} = ${${_varname}}")
     endif(ICU_DEBUG)
 endfunction(icudebug)
+
+set(IcuRoot "")
+if(DEFINED ENV{ICU_ROOT})
+    set(IcuRoot "$ENV{ICU_ROOT}")
+endif(DEFINED ENV{ICU_ROOT})
+if (DEFINED ICU_ROOT)
+    set(IcuRoot "${ICU_ROOT}")
+endif(DEFINED ICU_ROOT)
 
 set(IcuComponents )
 # <icu component name> <library name 1> ... <library name N>
@@ -88,6 +100,8 @@ endif()
 find_path(
     ICU_INCLUDE_DIRS
     NAMES unicode/utypes.h
+    HINTS ${IcuRoot}
+    PATH_SUFFIXES "include"
     DOC "Include directories for ICU"
 )
 
@@ -112,6 +126,8 @@ foreach(_icu_component ${ICU_FIND_COMPONENTS})
     find_library(
         _icu_lib
         NAMES ${IcuComponents_${_icu_component}}
+        HINTS ${IcuRoot}
+        PATH_SUFFIXES "bin" "lib"
         DOC "Libraries for ICU"
     )
 
