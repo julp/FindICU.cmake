@@ -154,8 +154,19 @@ if(ICU_FOUND)
     endif()
 
     string(REGEX REPLACE ".*# *define *U_ICU_VERSION_MAJOR_NUM *([0-9]+).*" "\\1" ICU_MAJOR_VERSION "${_icu_contents}")
-    string(REGEX REPLACE ".*# *define *U_ICU_VERSION_MINOR_NUM *([0-9]+).*" "\\1" ICU_MINOR_VERSION "${_icu_contents}")
-    string(REGEX REPLACE ".*# *define *U_ICU_VERSION_PATCHLEVEL_NUM *([0-9]+).*" "\\1" ICU_PATCH_VERSION "${_icu_contents}")
+    #
+    # From 4.9.1, ICU release version numbering was totaly changed, see:
+    # - http://site.icu-project.org/download/49
+    # - http://userguide.icu-project.org/design#TOC-Version-Numbers-in-ICU
+    #
+    if(ICU_MAJOR_VERSION LESS 49)
+        string(REGEX REPLACE ".*# *define *U_ICU_VERSION_MINOR_NUM *([0-9]+).*" "\\1" ICU_MINOR_VERSION "${_icu_contents}")
+        string(REGEX REPLACE ".*# *define *U_ICU_VERSION_PATCHLEVEL_NUM *([0-9]+).*" "\\1" ICU_PATCH_VERSION "${_icu_contents}")
+    else(ICU_MAJOR_VERSION LESS 49)
+        string(REGEX MATCH [0-9]$ ICU_MINOR_VERSION "${ICU_MAJOR_VERSION}")
+        string(REGEX REPLACE [0-9]$ "" ICU_MAJOR_VERSION "${ICU_MAJOR_VERSION}")
+        string(REGEX REPLACE ".*# *define *U_ICU_VERSION_MINOR_NUM *([0-9]+).*" "\\1" ICU_PATCH_VERSION "${_icu_contents}")
+    endif(ICU_MAJOR_VERSION LESS 49)
     set(ICU_VERSION "${ICU_MAJOR_VERSION}.${ICU_MINOR_VERSION}.${ICU_PATCH_VERSION}")
 endif(ICU_FOUND)
 
