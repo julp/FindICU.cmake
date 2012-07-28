@@ -20,6 +20,7 @@ function(icu_version_test _DIR)
     )
 
     if(${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS_${_DIR})
+        ########## <part to keep synced with FindICU.cmake> ##########
         # TODO: define a list?
         if(EXISTS "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS_${_DIR}}/unicode/uvernum.h") # ICU >= 4
             file(READ "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS_${_DIR}}/unicode/uvernum.h" ${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS)
@@ -72,16 +73,29 @@ function(icu_version_test _DIR)
             message("failed to detect ICU version")
         endif()
         set(${ICU_PUBLIC_VAR_NS}_VERSION "${${ICU_PUBLIC_VAR_NS}_MAJOR_VERSION}.${${ICU_PUBLIC_VAR_NS}_MINOR_VERSION}.${${ICU_PUBLIC_VAR_NS}_PATCH_VERSION}")
+        ########## </part to keep synced with FindICU.cmake> ##########
     endif(${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS_${_DIR})
 
-    message("${_DIR}")
-    message("${ICU_PUBLIC_VAR_NS}_MAJOR_VERSION = ${${ICU_PUBLIC_VAR_NS}_MAJOR_VERSION}")
-    message("${ICU_PUBLIC_VAR_NS}_MINOR_VERSION = ${${ICU_PUBLIC_VAR_NS}_MINOR_VERSION}")
-    message("${ICU_PUBLIC_VAR_NS}_PATCH_VERSION = ${${ICU_PUBLIC_VAR_NS}_PATCH_VERSION}")
-    message("====================")
+    if(
+        NOT DEFINED ${ICU_PUBLIC_VAR_NS}_MAJOR_VERSION
+        OR NOT DEFINED ${ICU_PUBLIC_VAR_NS}_MINOR_VERSION
+        OR NOT DEFINED ${ICU_PUBLIC_VAR_NS}_PATCH_VERSION
+    )
+        message(FATAL_ERROR "unable to determine ICU version")
+    endif()
+    if(EXISTS "${_DIR}/EXPECTED.txt")
+        file(STRINGS "${_DIR}/EXPECTED.txt" expected LIMIT_COUNT 1) # allow additionnal comment for documentation at end of file
+        if(${ICU_PUBLIC_VAR_NS}_VERSION VERSION_EQUAL expected)
+            message("${_DIR} => ${expected} (pass)")
+        else(${ICU_PUBLIC_VAR_NS}_VERSION VERSION_EQUAL expected)
+            message(FATAL_ERROR "test failed for ${_DIR}: get ${${ICU_PUBLIC_VAR_NS}_VERSION}, expect ${expected}")
+        endif(${ICU_PUBLIC_VAR_NS}_VERSION VERSION_EQUAL expected)
+    else(EXISTS "${_DIR}/EXPECTED.txt")
+        message("${_DIR} => ${${ICU_PUBLIC_VAR_NS}_VERSION} (default: please fill ${_DIR}/EXPECTED.txt)")
+    endif(EXISTS "${_DIR}/EXPECTED.txt")
 endfunction(icu_version_test)
 
-file(GLOB directories "[0-9]*")
+file(GLOB directories RELATIVE ${PROJECT_SOURCE_DIR} "[0-9]*")
 foreach(d ${directories})
     icu_version_test("${d}")
 endforeach(d)

@@ -1,7 +1,7 @@
 # This module can find the International Components for Unicode (ICU) Library
 #
 # Requirements:
-# - CMake >= 2.8.3
+# - CMake >= 2.8.3 (for new version of find_package_handle_standard_args)
 #
 # The following variables will be defined for your use:
 #   - ICU_FOUND             : were all of your specified components found (include dependencies)?
@@ -129,7 +129,7 @@ find_path(
 )
 
 if(${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS)
-    # TODO: define a list?
+    ########## <part to keep synced with tests/version/CMakeLists.txt> ##########
     if(EXISTS "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS}/unicode/uvernum.h") # ICU >= 4
         file(READ "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS}/unicode/uvernum.h" ${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS)
     elseif(EXISTS "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS}/unicode/uversion.h") # ICU [2;4[
@@ -178,6 +178,7 @@ if(${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS)
         message("failed to detect ICU version")
     endif()
     set(${ICU_PUBLIC_VAR_NS}_VERSION "${${ICU_PUBLIC_VAR_NS}_MAJOR_VERSION}.${${ICU_PUBLIC_VAR_NS}_MINOR_VERSION}.${${ICU_PUBLIC_VAR_NS}_PATCH_VERSION}")
+    ########## </part to keep synced with tests/version/CMakeLists.txt> ##########
 
     # Check dependencies (implies pkg-config)
     if(PKG_CONFIG_FOUND)
