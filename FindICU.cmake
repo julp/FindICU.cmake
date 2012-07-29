@@ -92,7 +92,7 @@ endmacro(icu_declare_component)
 icu_declare_component(data icudata)
 icu_declare_component(uc   icuuc)         # Common and Data libraries
 icu_declare_component(i18n icui18n icuin) # Internationalization library
-icu_declare_component(io   icuio)         # Stream and I/O Library
+icu_declare_component(io   icuio ustdio)  # Stream and I/O Library
 icu_declare_component(le   icule)         # Layout library
 icu_declare_component(lx   iculx)         # Paragraph Layout library
 
