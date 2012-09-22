@@ -139,7 +139,7 @@ if(${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS)
     elseif(EXISTS "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS}/utypes.h") # ICU 1.3
         file(READ "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS}/utypes.h" ${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS)
     else()
-        message("ICU version header not found")
+        message(FATAL_ERROR "ICU version header not found")
     endif()
 
     if(${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS MATCHES ".*# *define *ICU_VERSION *\"([0-9]+)\".*") # ICU 1.3
@@ -175,7 +175,7 @@ if(${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS)
             set(${ICU_PUBLIC_VAR_NS}_PATCH_VERSION "${CMAKE_MATCH_3}")
         endif()
     else()
-        message("failed to detect ICU version")
+        message(FATAL_ERROR "failed to detect ICU version")
     endif()
     set(${ICU_PUBLIC_VAR_NS}_VERSION "${${ICU_PUBLIC_VAR_NS}_MAJOR_VERSION}.${${ICU_PUBLIC_VAR_NS}_MINOR_VERSION}.${${ICU_PUBLIC_VAR_NS}_PATCH_VERSION}")
     ########## </part to keep synced with tests/version/CMakeLists.txt> ##########
