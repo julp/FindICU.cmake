@@ -12,11 +12,11 @@ set(ICU_PRIVATE_VAR_NS "_${ICU_PUBLIC_VAR_NS}") # Prefix for all ICU relative in
 
 function(icu_version_test _DIR)
     find_path(
-        ${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS_${_DIR}
-        NAMES unicode/utypes.h utypes.h unicode/uversion.h unicode/uvernum.h # unicode/uversion.h and unicode/uvernum.h only for testing here as unecessary utypes.h are not duplicated
-        HINTS ${_DIR}
+        ${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS_${_DIR} # UT specific: add ${_DIR} as suffix to not fetch first cached value
+        NAMES unicode/utypes.h utypes.h unicode/uversion.h unicode/uvernum.h # UT specific: search directly the header version file as all headers are not present
+        HINTS ${_DIR} # UT specific: we have to add our own location
         DOC "Include directories for ICU"
-        NO_DEFAULT_PATH
+        NO_DEFAULT_PATH # UT specific: ignore standard locations, use only our own location
     )
 
     if(${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS_${_DIR})
@@ -31,7 +31,7 @@ function(icu_version_test _DIR)
         elseif(EXISTS "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS_${_DIR}}/utypes.h") # ICU 1.3
             file(READ "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS_${_DIR}}/utypes.h" ${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS)
         else()
-            message("ICU version header not found")
+            message("ICU version header not found") # UT specific: no FATAL_ERROR
         endif()
 
         if(${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS MATCHES ".*# *define *ICU_VERSION *\"([0-9]+)\".*") # ICU 1.3
@@ -70,7 +70,7 @@ function(icu_version_test _DIR)
                 set(${ICU_PUBLIC_VAR_NS}_PATCH_VERSION "${CMAKE_MATCH_3}")
             endif()
         else()
-            message("failed to detect ICU version")
+            message("failed to detect ICU version") # UT specific: no FATAL_ERROR
         endif()
         set(${ICU_PUBLIC_VAR_NS}_VERSION "${${ICU_PUBLIC_VAR_NS}_MAJOR_VERSION}.${${ICU_PUBLIC_VAR_NS}_MINOR_VERSION}.${${ICU_PUBLIC_VAR_NS}_PATCH_VERSION}")
         ########## </part to keep synced with FindICU.cmake> ##########
