@@ -37,7 +37,7 @@
 #      include_directories(${ICU_INCLUDE_DIRS})
 #      add_executable(myapp myapp.c)
 #      target_link_libraries(myapp ${ICU_LIBRARIES})
-#   endif()
+#   endif(ICU_FOUND)
 
 #=============================================================================
 # Copyright (c) 2011-2012, julp
@@ -100,7 +100,6 @@ icu_declare_component(lx   iculx)         # Paragraph Layout library
 set(${ICU_PUBLIC_VAR_NS}_FOUND TRUE)
 set(${ICU_PUBLIC_VAR_NS}_LIBRARIES )
 set(${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS )
-set(${ICU_PUBLIC_VAR_NS}_DEFINITIONS )
 foreach(${ICU_PRIVATE_VAR_NS}_COMPONENT ${${ICU_PRIVATE_VAR_NS}_COMPONENTS})
     string(TOUPPER "${${ICU_PRIVATE_VAR_NS}_COMPONENT}" ${ICU_PRIVATE_VAR_NS}_UPPER_COMPONENT)
     set("${ICU_PUBLIC_VAR_NS}_${${ICU_PRIVATE_VAR_NS}_UPPER_COMPONENT}_FOUND" FALSE) # may be done in the icu_declare_component macro
