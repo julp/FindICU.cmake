@@ -40,7 +40,7 @@
 #   endif(ICU_FOUND)
 
 #=============================================================================
-# Copyright (c) 2011-2012, julp
+# Copyright (c) 2011-2013, julp
 #
 # Distributed under the OSI-approved BSD License
 #
@@ -51,9 +51,15 @@
 find_package(PkgConfig QUIET)
 
 ########## Private ##########
-set(ICU_PUBLIC_VAR_NS "ICU")                          # Prefix for all ICU relative public variables
-set(ICU_PRIVATE_VAR_NS "_${ICU_PUBLIC_VAR_NS}")       # Prefix for all ICU relative internal variables
-set(PC_ICU_PRIVATE_VAR_NS "_PC${ICU_PRIVATE_VAR_NS}") # Prefix for all pkg-config relative internal variables
+if(NOT DEFINED ICU_PUBLIC_VAR_NS)
+    set(ICU_PUBLIC_VAR_NS "ICU")                          # Prefix for all ICU relative public variables
+endif(NOT DEFINED ICU_PUBLIC_VAR_NS)
+if(NOT DEFINED ICU_PRIVATE_VAR_NS)
+    set(ICU_PRIVATE_VAR_NS "_${ICU_PUBLIC_VAR_NS}")       # Prefix for all ICU relative internal variables
+endif(NOT DEFINED ICU_PRIVATE_VAR_NS)
+if(NOT DEFINED PC_ICU_PRIVATE_VAR_NS)
+    set(PC_ICU_PRIVATE_VAR_NS "_PC${ICU_PRIVATE_VAR_NS}") # Prefix for all pkg-config relative internal variables
+endif(NOT DEFINED PC_ICU_PRIVATE_VAR_NS)
 
 function(icudebug _VARNAME)
     if(${ICU_PUBLIC_VAR_NS}_DEBUG)
