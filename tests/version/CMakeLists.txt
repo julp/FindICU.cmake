@@ -41,21 +41,15 @@ function(icu_version_test _DIR)
             set(${ICU_PUBLIC_VAR_NS}_MINOR_VERSION "${CMAKE_MATCH_1}")
             set(${ICU_PUBLIC_VAR_NS}_PATCH_VERSION "0")
         elseif(${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS MATCHES ".*# *define *U_ICU_VERSION_MAJOR_NUM *([0-9]+).*")
-            #string(REGEX REPLACE ".*# *define *U_ICU_VERSION_MAJOR_NUM *([0-9]+).*" "\\1" ${ICU_PUBLIC_VAR_NS}_MAJOR_VERSION "${${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS}")
-            set(${ICU_PUBLIC_VAR_NS}_MAJOR_VERSION "${CMAKE_MATCH_1}")
             #
             # Since version 4.9.1, ICU release version numbering was totaly changed, see:
             # - http://site.icu-project.org/download/49
             # - http://userguide.icu-project.org/design#TOC-Version-Numbers-in-ICU
             #
-            if(${ICU_PUBLIC_VAR_NS}_MAJOR_VERSION LESS 49)
-                string(REGEX REPLACE ".*# *define *U_ICU_VERSION_MINOR_NUM *([0-9]+).*" "\\1" ${ICU_PUBLIC_VAR_NS}_MINOR_VERSION "${${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS}")
-                string(REGEX REPLACE ".*# *define *U_ICU_VERSION_PATCHLEVEL_NUM *([0-9]+).*" "\\1" ${ICU_PUBLIC_VAR_NS}_PATCH_VERSION "${${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS}")
-            else(${ICU_PUBLIC_VAR_NS}_MAJOR_VERSION LESS 49)
-                string(REGEX MATCH [0-9]$ ${ICU_PUBLIC_VAR_NS}_MINOR_VERSION "${${ICU_PUBLIC_VAR_NS}_MAJOR_VERSION}")
-                string(REGEX REPLACE [0-9]$ "" ${ICU_PUBLIC_VAR_NS}_MAJOR_VERSION "${${ICU_PUBLIC_VAR_NS}_MAJOR_VERSION}")
-                string(REGEX REPLACE ".*# *define *U_ICU_VERSION_MINOR_NUM *([0-9]+).*" "\\1" ${ICU_PUBLIC_VAR_NS}_PATCH_VERSION "${${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS}")
-            endif(${ICU_PUBLIC_VAR_NS}_MAJOR_VERSION LESS 49)
+            #string(REGEX REPLACE ".*# *define *U_ICU_VERSION_MAJOR_NUM *([0-9]+).*" "\\1" ${ICU_PUBLIC_VAR_NS}_MAJOR_VERSION "${${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS}")
+            set(${ICU_PUBLIC_VAR_NS}_MAJOR_VERSION "${CMAKE_MATCH_1}")
+            string(REGEX REPLACE ".*# *define *U_ICU_VERSION_MINOR_NUM *([0-9]+).*" "\\1" ${ICU_PUBLIC_VAR_NS}_MINOR_VERSION "${${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS}")
+            string(REGEX REPLACE ".*# *define *U_ICU_VERSION_PATCHLEVEL_NUM *([0-9]+).*" "\\1" ${ICU_PUBLIC_VAR_NS}_PATCH_VERSION "${${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS}")
         elseif(${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS MATCHES ".*# *define *U_ICU_VERSION *\"(([0-9]+)(\\.[0-9]+)*)\".*") # ICU [1.4;1.8[
             # [1.4;1.8[ as #define U_ICU_VERSION "1.4.1.2" but it seems that some 1.4.1(?:\.\d)? have releasing error and appears as 1.4.0
             #string(REGEX REPLACE ".*# *define *U_ICU_VERSION *\"([0-9]+)(\\.[0-9]+)*\".*" "\\1" ${ICU_PRIVATE_VAR_NS}_FULL_VERSION "${${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS}")
