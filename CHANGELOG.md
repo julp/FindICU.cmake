@@ -1,5 +1,6 @@
 Only significant changes to FindICU.cmake figure here:
 
+* 2013-09-01: icu-config was never found (find_program arguments inverted)
 * 2013-06-11: revert previous translation of new ICU versions (ICU >= 49) into old format, keep it as is (done by 2012-05-31)
 * 2012-12-10: support for ICU_*_FLAGS (empty if icu-config is not found)
 * 2012-09-22: version header not found was not fatal
