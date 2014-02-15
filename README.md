@@ -23,7 +23,7 @@ License: BSD
 * ICU_MAJOR_VERSION: major version of ICU
 * ICU_MINOR_VERSION: minor version of ICU
 * ICU_PATCH_VERSION: patch version of ICU
-* ICU_<COMPONENT>_FOUND: was <COMPONENT> found? (FALSE for non specified component if it is not a dependency)
+* ICU_\<COMPONENT\>_FOUND: was \<COMPONENT\> found? (FALSE for non specified component if it is not a dependency)
 * ICU_C_FLAGS: C compiler flags
 * ICU_CXX_FLAGS: C++ compiler flags
 * ICU_CPP_FLAGS: C Preprocessor flags
