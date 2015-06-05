@@ -1,5 +1,6 @@
 Only significant changes to FindICU.cmake figure here:
 
+* 2015-06-05: ICU_FOUND variable stay valued to TRUE if include dirs are not found (#2 - @nixprime)
 * 2013-09-01: icu-config was never found (find_program arguments inverted)
 * 2013-06-11: revert previous translation of new ICU versions (ICU >= 49) into old format, keep it as is (done by 2012-05-31)
 * 2012-12-10: support for ICU_*_FLAGS (empty if icu-config is not found)
