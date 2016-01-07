@@ -10,7 +10,7 @@ Only one: CMake >= 2.8.3 (for new version of find_package_handle_standard_args)
 
 ### License
 
-License: BSD
+License: BSD-2 clause
 
 ## Usage
 
