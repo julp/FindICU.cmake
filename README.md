@@ -44,6 +44,10 @@ Note: all ICU_*_FLAGS variables will be defined as empty strings if icu-config d
 Notes:
 * if ICU is required by your project, append the keyword *REQUIRED* (`find_package(ICU REQUIRED)`). On the opposite, if ICU is optional, the keyword *QUIET* can be used to silently try to find ICU.
 * for a project which depends on a minimum version of ICU, add it just after 'ICU' (eg mandatory ICU >= 4.4: `find_package(ICU 4.4 REQUIRED)`)
+* **by default, you only link to the ICU's base component called _uc_**. To link to any additionnal part of ICU, you have to list them behind the *COMPONENTS* keyword (eg: `find_package(ICU COMPONENTS uc io)`). If not, you will issue linking (undefined symbol) errors. These components are:
+    + the *io* component is needed if you use ustdio (C) or ustream (C++)
+    + the *i18n* component is required for charset conversions, formatting, collation, string search, transliteration, regexp, calendar/timezone
+    + the *le*/*lx* for LayoutEngine/ParagraphLayout
 
 #### For end users
 
