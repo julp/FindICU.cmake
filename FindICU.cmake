@@ -216,14 +216,14 @@ if(${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS)
             ${ICU_PRIVATE_VAR_NS}_LIB_RELEASE_${${ICU_PRIVATE_VAR_NS}_COMPONENT}
             NAMES ${${ICU_PRIVATE_VAR_NS}_POSSIBLE_RELEASE_NAMES}
             HINTS ${${ICU_PRIVATE_VAR_NS}_ROOT}
-            PATH_SUFFIXES ${_ICU_LIB_SUFFIXES}
+            PATH_SUFFIXES ${${ICU_PRIVATE_VAR_NS}_LIB_SUFFIXES}
             DOC "Release libraries for ICU"
         )
         find_library(
             ${ICU_PRIVATE_VAR_NS}_LIB_DEBUG_${${ICU_PRIVATE_VAR_NS}_COMPONENT}
             NAMES ${${ICU_PRIVATE_VAR_NS}_POSSIBLE_DEBUG_NAMES}
             HINTS ${${ICU_PRIVATE_VAR_NS}_ROOT}
-            PATH_SUFFIXES ${_ICU_LIB_SUFFIXES}
+            PATH_SUFFIXES ${${ICU_PRIVATE_VAR_NS}_LIB_SUFFIXES}
             DOC "Debug libraries for ICU"
         )
 
