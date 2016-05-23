@@ -1,0 +1,3 @@
+es:table {
+    whoami:string { "es.txt" }
+}
