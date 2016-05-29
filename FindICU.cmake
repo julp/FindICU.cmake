@@ -1,4 +1,4 @@
-# This module can find the International Components for Unicode (ICU) Library
+# This module can find the International Components for Unicode (ICU) libraries
 #
 # Requirements:
 # - CMake >= 2.8.3 (for new version of find_package_handle_standard_args)
@@ -38,15 +38,6 @@
 #      add_executable(myapp myapp.c)
 #      target_link_libraries(myapp ${ICU_LIBRARIES})
 #   endif(ICU_FOUND)
-
-#=============================================================================
-# Copyright (c) 2011-2013, julp
-#
-# Distributed under the OSI-approved BSD License
-#
-# This software is distributed WITHOUT ANY WARRANTY; without even the
-# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-#=============================================================================
 
 find_package(PkgConfig QUIET)
 
