@@ -22,9 +22,9 @@ function(icu_version_test _DIR)
     if(${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS_${_DIR})
         ########## <part to keep synced with FindICU.cmake> ##########
         # TODO: define a list?
-        if(EXISTS "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS_${_DIR}}/unicode/uvernum.h") # ICU >= 4
+        if(EXISTS "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS_${_DIR}}/unicode/uvernum.h") # ICU >= 4.4
             file(READ "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS_${_DIR}}/unicode/uvernum.h" ${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS)
-        elseif(EXISTS "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS_${_DIR}}/unicode/uversion.h") # ICU [2;4[
+        elseif(EXISTS "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS_${_DIR}}/unicode/uversion.h") # ICU [2;4.4[
             file(READ "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS_${_DIR}}/unicode/uversion.h" ${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS)
         elseif(EXISTS "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS_${_DIR}}/unicode/utypes.h") # ICU [1.4;2[
             file(READ "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIRS_${_DIR}}/unicode/utypes.h" ${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS)
@@ -51,7 +51,7 @@ function(icu_version_test _DIR)
             string(REGEX REPLACE ".*# *define *U_ICU_VERSION_MINOR_NUM *([0-9]+).*" "\\1" ${ICU_PUBLIC_VAR_NS}_MINOR_VERSION "${${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS}")
             string(REGEX REPLACE ".*# *define *U_ICU_VERSION_PATCHLEVEL_NUM *([0-9]+).*" "\\1" ${ICU_PUBLIC_VAR_NS}_PATCH_VERSION "${${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS}")
         elseif(${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS MATCHES ".*# *define *U_ICU_VERSION *\"(([0-9]+)(\\.[0-9]+)*)\".*") # ICU [1.4;1.8[
-            # [1.4;1.8[ as #define U_ICU_VERSION "1.4.1.2" but it seems that some 1.4.1(?:\.\d)? have releasing error and appears as 1.4.0
+            # [1.4;1.8[ as #define U_ICU_VERSION "1.4.1.2" but it seems that some 1.4.[12](?:\.\d)? have releasing error and appears as 1.4.0
             #string(REGEX REPLACE ".*# *define *U_ICU_VERSION *\"([0-9]+)(\\.[0-9]+)*\".*" "\\1" ${ICU_PRIVATE_VAR_NS}_FULL_VERSION "${${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS}")
             set(${ICU_PRIVATE_VAR_NS}_FULL_VERSION "${CMAKE_MATCH_1}") # copy CMAKE_MATCH_1, no longer valid on the following if
             if(${ICU_PRIVATE_VAR_NS}_FULL_VERSION MATCHES "^([0-9]+)\\.([0-9]+)$")
