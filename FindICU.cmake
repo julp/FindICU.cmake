@@ -56,23 +56,23 @@ if(NOT DEFINED PC_ICU_PRIVATE_VAR_NS)
     set(PC_ICU_PRIVATE_VAR_NS "_PC${ICU_PRIVATE_VAR_NS}") # Prefix for all pkg-config relative internal variables
 endif(NOT DEFINED PC_ICU_PRIVATE_VAR_NS)
 
-set(${ICU_PRIVATE_VAR_NS}_ROOT "")
+set(${ICU_PRIVATE_VAR_NS}_HINTS )
 # <deprecated>
 # for future removal
 if(DEFINED ENV{ICU_ROOT})
-    set(${ICU_PRIVATE_VAR_NS}_ROOT "$ENV{ICU_ROOT}")
-    message(AUTHOR_WARNING "ICU_ROOT is deprecated in favor of ICU_ROOT_DIR")
+    list(APPEND ${ICU_PRIVATE_VAR_NS}_HINTS "$ENV{ICU_ROOT}")
+    message(AUTHOR_WARNING "ENV{ICU_ROOT} is deprecated in favor of ENV{ICU_ROOT_DIR}")
 endif(DEFINED ENV{ICU_ROOT})
 if (DEFINED ICU_ROOT)
-    set(${ICU_PRIVATE_VAR_NS}_ROOT "${ICU_ROOT}")
+    list(APPEND ${ICU_PRIVATE_VAR_NS}_HINTS "${ICU_ROOT}")
     message(AUTHOR_WARNING "ICU_ROOT is deprecated in favor of ICU_ROOT_DIR")
 endif(DEFINED ICU_ROOT)
 # </deprecated>
 if(DEFINED ENV{ICU_ROOT_DIR})
-    set(${ICU_PRIVATE_VAR_NS}_ROOT "$ENV{ICU_ROOT_DIR}")
+    list(APPEND ${ICU_PRIVATE_VAR_NS}_HINTS "$ENV{ICU_ROOT_DIR}")
 endif(DEFINED ENV{ICU_ROOT_DIR})
 if (DEFINED ICU_ROOT_DIR)
-    set(${ICU_PRIVATE_VAR_NS}_ROOT "${ICU_ROOT_DIR}")
+    list(APPEND ${ICU_PRIVATE_VAR_NS}_HINTS "${ICU_ROOT_DIR}")
 endif(DEFINED ICU_ROOT_DIR)
 
 set(${ICU_PRIVATE_VAR_NS}_COMPONENTS )
@@ -118,20 +118,44 @@ else(NOT ${ICU_PUBLIC_VAR_NS}_FIND_COMPONENTS)
     endforeach(${ICU_PRIVATE_VAR_NS}_COMPONENT)
 endif(NOT ${ICU_PUBLIC_VAR_NS}_FIND_COMPONENTS)
 
+# if pkg-config is available check components dependencies and append `pkg-config icu-<component> --variable=prefix` to hints
+if(PKG_CONFIG_FOUND)
+    set(${ICU_PRIVATE_VAR_NS}_COMPONENTS_DUP ${${ICU_PUBLIC_VAR_NS}_FIND_COMPONENTS})
+    foreach(${ICU_PRIVATE_VAR_NS}_COMPONENT ${${ICU_PRIVATE_VAR_NS}_COMPONENTS_DUP})
+        pkg_check_modules(${PC_ICU_PRIVATE_VAR_NS} "icu-${${ICU_PRIVATE_VAR_NS}_COMPONENT}" QUIET)
+
+        if(${PC_ICU_PRIVATE_VAR_NS}_FOUND)
+            list(APPEND ${ICU_PRIVATE_VAR_NS}_HINTS ${${PC_ICU_PRIVATE_VAR_NS}_PREFIX})
+            foreach(${PC_ICU_PRIVATE_VAR_NS}_LIBRARY ${${PC_ICU_PRIVATE_VAR_NS}_LIBRARIES})
+                string(REGEX REPLACE "^icu" "" ${PC_ICU_PRIVATE_VAR_NS}_STRIPPED_LIBRARY ${${PC_ICU_PRIVATE_VAR_NS}_LIBRARY})
+                if(NOT ${PC_ICU_PRIVATE_VAR_NS}_STRIPPED_LIBRARY STREQUAL "data")
+                    list(FIND ${ICU_PUBLIC_VAR_NS}_FIND_COMPONENTS ${${PC_ICU_PRIVATE_VAR_NS}_STRIPPED_LIBRARY} ${ICU_PRIVATE_VAR_NS}_COMPONENT_INDEX)
+                    if(${ICU_PRIVATE_VAR_NS}_COMPONENT_INDEX EQUAL -1)
+                        message(WARNING "Missing component dependency: ${${PC_ICU_PRIVATE_VAR_NS}_STRIPPED_LIBRARY}. Add it to your find_package(ICU) line as COMPONENTS to fix this warning.")
+                        list(APPEND ${ICU_PUBLIC_VAR_NS}_FIND_COMPONENTS ${${PC_ICU_PRIVATE_VAR_NS}_STRIPPED_LIBRARY})
+                    endif(${ICU_PRIVATE_VAR_NS}_COMPONENT_INDEX EQUAL -1)
+                endif(NOT ${PC_ICU_PRIVATE_VAR_NS}_STRIPPED_LIBRARY STREQUAL "data")
+            endforeach(${PC_ICU_PRIVATE_VAR_NS}_LIBRARY)
+        endif(${PC_ICU_PRIVATE_VAR_NS}_FOUND)
+    endforeach(${ICU_PRIVATE_VAR_NS}_COMPONENT)
+endif(PKG_CONFIG_FOUND)
+# list(APPEND ${ICU_PRIVATE_VAR_NS}_HINTS ENV ICU_ROOT_DIR)
+# message("${ICU_PRIVATE_VAR_NS}_HINTS = ${${ICU_PRIVATE_VAR_NS}_HINTS}")
+
 # Includes
 find_path(
     ${ICU_PUBLIC_VAR_NS}_INCLUDE_DIR
     NAMES unicode/utypes.h utypes.h
-    HINTS ${${ICU_PRIVATE_VAR_NS}_ROOT}
+    HINTS ${${ICU_PRIVATE_VAR_NS}_HINTS}
     PATH_SUFFIXES "include"
     DOC "Include directories for ICU"
 )
 
 if(${ICU_PUBLIC_VAR_NS}_INCLUDE_DIR)
     ########## <part to keep synced with tests/version/CMakeLists.txt> ##########
-    if(EXISTS "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIR}/unicode/uvernum.h") # ICU >= 4
+    if(EXISTS "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIR}/unicode/uvernum.h") # ICU >= 4.4
         file(READ "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIR}/unicode/uvernum.h" ${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS)
-    elseif(EXISTS "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIR}/unicode/uversion.h") # ICU [2;4[
+    elseif(EXISTS "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIR}/unicode/uversion.h") # ICU [2;4.4[
         file(READ "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIR}/unicode/uversion.h" ${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS)
     elseif(EXISTS "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIR}/unicode/utypes.h") # ICU [1.4;2[
         file(READ "${${ICU_PUBLIC_VAR_NS}_INCLUDE_DIR}/unicode/utypes.h" ${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS)
@@ -156,7 +180,7 @@ if(${ICU_PUBLIC_VAR_NS}_INCLUDE_DIR)
         string(REGEX REPLACE ".*# *define *U_ICU_VERSION_MINOR_NUM *([0-9]+).*" "\\1" ${ICU_PUBLIC_VAR_NS}_VERSION_MINOR "${${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS}")
         string(REGEX REPLACE ".*# *define *U_ICU_VERSION_PATCHLEVEL_NUM *([0-9]+).*" "\\1" ${ICU_PUBLIC_VAR_NS}_VERSION_PATCH "${${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS}")
     elseif(${ICU_PRIVATE_VAR_NS}_VERSION_HEADER_CONTENTS MATCHES ".*# *define *U_ICU_VERSION *\"(([0-9]+)(\\.[0-9]+)*)\".*") # ICU [1.4;1.8[
-        # [1.4;1.8[ as #define U_ICU_VERSION "1.4.1.2" but it seems that some 1.4.1(?:\.\d)? have releasing error and appears as 1.4.0
+        # [1.4;1.8[ as #define U_ICU_VERSION "1.4.1.2" but it seems that some 1.4.[12](?:\.\d)? have releasing error and appears as 1.4.0
         set(${ICU_PRIVATE_VAR_NS}_FULL_VERSION "${CMAKE_MATCH_1}") # copy CMAKE_MATCH_1, no longer valid on the following if
         if(${ICU_PRIVATE_VAR_NS}_FULL_VERSION MATCHES "^([0-9]+)\\.([0-9]+)$")
             set(${ICU_PUBLIC_VAR_NS}_VERSION_MAJOR "${CMAKE_MATCH_1}")
@@ -173,27 +197,6 @@ if(${ICU_PUBLIC_VAR_NS}_INCLUDE_DIR)
     set(${ICU_PUBLIC_VAR_NS}_VERSION "${${ICU_PUBLIC_VAR_NS}_VERSION_MAJOR}.${${ICU_PUBLIC_VAR_NS}_VERSION_MINOR}.${${ICU_PUBLIC_VAR_NS}_VERSION_PATCH}")
     ########## </part to keep synced with tests/version/CMakeLists.txt> ##########
 endif(${ICU_PUBLIC_VAR_NS}_INCLUDE_DIR)
-
-# if pkg-config is available check components dependencies
-if(PKG_CONFIG_FOUND)
-    set(${ICU_PRIVATE_VAR_NS}_COMPONENTS_DUP ${${ICU_PUBLIC_VAR_NS}_FIND_COMPONENTS})
-    foreach(${ICU_PRIVATE_VAR_NS}_COMPONENT ${${ICU_PRIVATE_VAR_NS}_COMPONENTS_DUP})
-        pkg_check_modules(${PC_ICU_PRIVATE_VAR_NS} "icu-${${ICU_PRIVATE_VAR_NS}_COMPONENT}" QUIET)
-
-        if(${PC_ICU_PRIVATE_VAR_NS}_FOUND)
-            foreach(${PC_ICU_PRIVATE_VAR_NS}_LIBRARY ${${PC_ICU_PRIVATE_VAR_NS}_LIBRARIES})
-                string(REGEX REPLACE "^icu" "" ${PC_ICU_PRIVATE_VAR_NS}_STRIPPED_LIBRARY ${${PC_ICU_PRIVATE_VAR_NS}_LIBRARY})
-                if(NOT ${PC_ICU_PRIVATE_VAR_NS}_STRIPPED_LIBRARY STREQUAL "data")
-                    list(FIND ${ICU_PUBLIC_VAR_NS}_FIND_COMPONENTS ${${PC_ICU_PRIVATE_VAR_NS}_STRIPPED_LIBRARY} ${ICU_PRIVATE_VAR_NS}_COMPONENT_INDEX)
-                    if(${ICU_PRIVATE_VAR_NS}_COMPONENT_INDEX EQUAL -1)
-                        message(WARNING "Missing component dependency: ${${PC_ICU_PRIVATE_VAR_NS}_STRIPPED_LIBRARY}. Add it to your find_package(ICU) line as COMPONENTS to fix this warning.")
-                        list(APPEND ${ICU_PUBLIC_VAR_NS}_FIND_COMPONENTS ${${PC_ICU_PRIVATE_VAR_NS}_STRIPPED_LIBRARY})
-                    endif(${ICU_PRIVATE_VAR_NS}_COMPONENT_INDEX EQUAL -1)
-                endif(NOT ${PC_ICU_PRIVATE_VAR_NS}_STRIPPED_LIBRARY STREQUAL "data")
-            endforeach(${PC_ICU_PRIVATE_VAR_NS}_LIBRARY)
-        endif(${PC_ICU_PRIVATE_VAR_NS}_FOUND)
-    endforeach(${ICU_PRIVATE_VAR_NS}_COMPONENT)
-endif(PKG_CONFIG_FOUND)
 
 # Check libraries
 if(MSVC)
@@ -214,13 +217,13 @@ foreach(${ICU_PRIVATE_VAR_NS}_COMPONENT ${${ICU_PUBLIC_VAR_NS}_FIND_COMPONENTS})
         find_library(
             ${ICU_PUBLIC_VAR_NS}_${${ICU_PRIVATE_VAR_NS}_UPPER_COMPONENT}_LIBRARY_RELEASE
             NAMES ${${ICU_PRIVATE_VAR_NS}_POSSIBLE_RELEASE_NAMES}
-            HINTS ${${ICU_PRIVATE_VAR_NS}_ROOT}
+            HINTS ${${ICU_PRIVATE_VAR_NS}_HINTS}
             DOC "Release library for ICU ${${ICU_PRIVATE_VAR_NS}_COMPONENT} component"
         )
         find_library(
             ${ICU_PUBLIC_VAR_NS}_${${ICU_PRIVATE_VAR_NS}_UPPER_COMPONENT}_LIBRARY_DEBUG
             NAMES ${${ICU_PRIVATE_VAR_NS}_POSSIBLE_DEBUG_NAMES}
-            HINTS ${${ICU_PRIVATE_VAR_NS}_ROOT}
+            HINTS ${${ICU_PRIVATE_VAR_NS}_HINTS}
             DOC "Debug library for ICU ${${ICU_PRIVATE_VAR_NS}_COMPONENT} component"
         )
 
@@ -230,7 +233,7 @@ foreach(${ICU_PRIVATE_VAR_NS}_COMPONENT ${${ICU_PUBLIC_VAR_NS}_FIND_COMPONENTS})
         find_library(
             ${ICU_PUBLIC_VAR_NS}_${${ICU_PRIVATE_VAR_NS}_UPPER_COMPONENT}_LIBRARY
             NAMES ${${ICU_PRIVATE_VAR_NS}_COMPONENTS_${${ICU_PRIVATE_VAR_NS}_COMPONENT}}
-            HINTS ${${ICU_PRIVATE_VAR_NS}_ROOT}
+            PATHS ${${ICU_PRIVATE_VAR_NS}_HINTS}
             DOC "Library for ICU ${${ICU_PRIVATE_VAR_NS}_COMPONENT} component"
         )
 
@@ -242,7 +245,7 @@ foreach(${ICU_PRIVATE_VAR_NS}_COMPONENT ${${ICU_PUBLIC_VAR_NS}_FIND_COMPONENTS})
 endforeach(${ICU_PRIVATE_VAR_NS}_COMPONENT)
 
 # Try to find out compiler flags
-find_program(${ICU_PUBLIC_VAR_NS}_CONFIG_EXECUTABLE icu-config HINTS ${${ICU_PRIVATE_VAR_NS}_ROOT})
+find_program(${ICU_PUBLIC_VAR_NS}_CONFIG_EXECUTABLE icu-config HINTS ${${ICU_PRIVATE_VAR_NS}_HINTS})
 if(${ICU_PUBLIC_VAR_NS}_CONFIG_EXECUTABLE)
     execute_process(COMMAND ${${ICU_PUBLIC_VAR_NS}_CONFIG_EXECUTABLE} --cflags OUTPUT_VARIABLE ${ICU_PUBLIC_VAR_NS}_C_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
     execute_process(COMMAND ${${ICU_PUBLIC_VAR_NS}_CONFIG_EXECUTABLE} --cxxflags OUTPUT_VARIABLE ${ICU_PUBLIC_VAR_NS}_CXX_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -319,8 +322,8 @@ function(_icu_extract_locale_from_rb _BUNDLE_SOURCE _RETURN_VAR_NAME)
 endfunction(_icu_extract_locale_from_rb)
 
 ########## Public ##########
-find_program(${ICU_PUBLIC_VAR_NS}_GENRB_EXECUTABLE genrb HINTS ${${ICU_PRIVATE_VAR_NS}_ROOT})
-find_program(${ICU_PUBLIC_VAR_NS}_PKGDATA_EXECUTABLE pkgdata HINTS ${${ICU_PRIVATE_VAR_NS}_ROOT})
+find_program(${ICU_PUBLIC_VAR_NS}_GENRB_EXECUTABLE genrb HINTS ${${ICU_PRIVATE_VAR_NS}_HINTS})
+find_program(${ICU_PUBLIC_VAR_NS}_PKGDATA_EXECUTABLE pkgdata HINTS ${${ICU_PRIVATE_VAR_NS}_HINTS})
 
 if(NOT ${ICU_PUBLIC_VAR_NS}_GENRB_EXECUTABLE)
     message(FATAL_ERROR "genrb not found")
