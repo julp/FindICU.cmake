@@ -1,5 +1,8 @@
 Only significant changes to FindICU.cmake figure here:
 
+* 2016-09-03: move genrb/pkgdata checks to icu_generate_resource_bundle function to avoid unnecessary failure
+   on systems where ICU are splitted in several packages (headers/libraries/tools) when you only want to find
+   ICU libraries (#4 - @tepperly)
 * 2016-05-31:
   + add support to build resource bundles
   + no longer initialize ICU_FOUND to TRUE

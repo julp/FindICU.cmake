@@ -322,16 +322,6 @@ function(_icu_extract_locale_from_rb _BUNDLE_SOURCE _RETURN_VAR_NAME)
 endfunction(_icu_extract_locale_from_rb)
 
 ########## Public ##########
-find_program(${ICU_PUBLIC_VAR_NS}_GENRB_EXECUTABLE genrb HINTS ${${ICU_PRIVATE_VAR_NS}_HINTS})
-find_program(${ICU_PUBLIC_VAR_NS}_PKGDATA_EXECUTABLE pkgdata HINTS ${${ICU_PRIVATE_VAR_NS}_HINTS})
-
-if(NOT ${ICU_PUBLIC_VAR_NS}_GENRB_EXECUTABLE)
-    message(FATAL_ERROR "genrb not found")
-endif(NOT ${ICU_PUBLIC_VAR_NS}_GENRB_EXECUTABLE)
-if(NOT ${ICU_PUBLIC_VAR_NS}_PKGDATA_EXECUTABLE)
-    message(FATAL_ERROR "pkgdata not found")
-endif(NOT ${ICU_PUBLIC_VAR_NS}_PKGDATA_EXECUTABLE)
-
 
 #
 # Prototype:
@@ -379,6 +369,18 @@ endif(NOT ${ICU_PUBLIC_VAR_NS}_PKGDATA_EXECUTABLE)
 #
 
 function(icu_generate_resource_bundle)
+
+    ##### <check for pkgdata/genrb availability> #####
+    find_program(${ICU_PUBLIC_VAR_NS}_GENRB_EXECUTABLE genrb HINTS ${${ICU_PRIVATE_VAR_NS}_HINTS})
+    find_program(${ICU_PUBLIC_VAR_NS}_PKGDATA_EXECUTABLE pkgdata HINTS ${${ICU_PRIVATE_VAR_NS}_HINTS})
+
+    if(NOT ${ICU_PUBLIC_VAR_NS}_GENRB_EXECUTABLE)
+        message(FATAL_ERROR "genrb not found")
+    endif(NOT ${ICU_PUBLIC_VAR_NS}_GENRB_EXECUTABLE)
+    if(NOT ${ICU_PUBLIC_VAR_NS}_PKGDATA_EXECUTABLE)
+        message(FATAL_ERROR "pkgdata not found")
+    endif(NOT ${ICU_PUBLIC_VAR_NS}_PKGDATA_EXECUTABLE)
+    ##### </check for pkgdata/genrb availability> #####
 
     ##### <constants> #####
     set(TARGET_SEPARATOR "+")
@@ -674,9 +676,6 @@ if(${ICU_PUBLIC_VAR_NS}_DEBUG)
     icudebug("VERSION_MINOR")
     icudebug("VERSION_PATCH")
     icudebug("VERSION")
-    # Executables
-    icudebug("GENRB_EXECUTABLE")
-    icudebug("PKGDATA_EXECUTABLE")
     # <COMPONENT>_(FOUND|LIBRARY)
     set(${ICU_PRIVATE_VAR_NS}_COMPONENT_VARIABLES "FOUND" "LIBRARY" "LIBRARY_RELEASE" "LIBRARY_DEBUG")
     foreach(${ICU_PRIVATE_VAR_NS}_COMPONENT ${${ICU_PRIVATE_VAR_NS}_COMPONENTS})
