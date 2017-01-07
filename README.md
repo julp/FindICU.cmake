@@ -58,7 +58,7 @@ icu_generate_resource_bundle(
     + "library" (other name: "dll") to assemble all ressource bundles into a separate and loadable library (.dll/.so)
 * DEPENDS (;-list of strings): only when *TYPE* is "library", "dll" or "static", a list of targets (add_executable for example) to link to
 * FORMAT (string): default is ICU4C binary format, else one of "java" of "xliff"
-* NO_SHARED_FLAGS (boolean): if set, skip appending *ICU_C(XX)_SHARED_FLAGS* to eahc target given as *DEPENDS* (only when *TYPE* is "static", "library" or "dll")
+* NO_SHARED_FLAGS (boolean): if set, skip appending *ICU_C(XX)_SHARED_FLAGS* to each target given as *DEPENDS* (only when *TYPE* is "static", "library" or "dll")
 * DESTINATION (string): a directory where to install output files
 
 See `tests/RB/c_*pkg*` for examples.
