@@ -2,6 +2,8 @@
 
 A CMake module to find International Components for Unicode (ICU) Library
 
+[Note that CMake, since its version 3.7.0, includes a FindICU module](https://cmake.org/cmake/help/v3.7/module/FindICU.html#module:FindICU) that does **NOT** work in the same way at all (they are not compatible). Make sure, if you use the present module, to include it and give it the priority by redefining CMAKE_MODULE_PATH accordingly.
+
 ## Information
 
 ### Prerequisites
